@@ -4,24 +4,24 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Taxi Earnings Tracker</title>
-  <!-- iOS Web App Meta Tags -->
+  
+  <!-- Apple Web App Standalone Meta Tags -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Taxi Earnings">
   <link rel="apple-touch-icon" href="https://img.icons8.com/isometric-line/180/000000/taxi.png">
-  
+
   <style>
     :root {
-      --bg-color: #12181b;
-      --card-bg: #1e272c;
-      --accent-green: #2ecc71;
-      --accent-hover: #27ae60;
+      --bg-dark: #0e1416;
+      --card-bg: rgba(26, 38, 36, 0.7);
+      --card-border: rgba(46, 204, 113, 0.15);
+      --primary-green: #2ecc71;
+      --dusky-green: #1b4d3e;
+      --accent-emerald: #00b894;
+      --text-bright: #f5f6fa;
+      --text-muted: #8a99a6;
       --danger-red: #e74c3c;
-      --text-main: #f5f6fa;
-      --text-sub: #a4b0be;
-      --button-bg: #2c3e50;
-      --button-active: #34495e;
-      --border-color: #2f3640;
     }
 
     * {
@@ -34,436 +34,456 @@
     }
 
     body {
-      background-color: var(--bg-color);
-      color: var(--text-main);
-      display: flex;
-      flex-direction: column;
+      background-color: var(--bg-dark);
+      background-image: radial-gradient(circle at 50% 0%, #152b24 0%, #0e1416 75%);
+      color: var(--text-bright);
       min-height: 100vh;
-      padding: env(safe-area-inset-top) 16px env(safe-area-inset-bottom) 16px;
-    }
-
-    /* Header & Total Section */
-    header {
-      padding: 16px 0 12px 0;
-      text-align: center;
-    }
-
-    .subtitle {
-      font-size: 0.85rem;
-      color: var(--text-sub);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 4px;
-    }
-
-    .total-display {
-      font-size: 3rem;
-      font-weight: 800;
-      color: var(--accent-green);
-      line-height: 1.1;
-    }
-
-    .trip-count {
-      font-size: 0.95rem;
-      color: var(--text-sub);
-      margin-top: 4px;
-    }
-
-    /* Main Action Grid */
-    .fare-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      margin: 16px 0;
-      flex-grow: 1;
-    }
-
-    .btn-fare {
-      background-color: var(--button-bg);
-      border: 2px solid var(--border-color);
-      border-radius: 16px;
-      color: var(--text-main);
-      font-size: 1.8rem;
-      font-weight: 700;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 85px;
-      cursor: pointer;
-      transition: transform 0.05s ease, background-color 0.1s ease;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+      justify-content: space-between;
+      padding: env(safe-area-inset-top, 20px) 16px env(safe-area-inset-bottom, 20px) 16px;
     }
 
-    .btn-fare:active {
-      transform: scale(0.96);
-      background-color: var(--accent-green);
-      border-color: var(--accent-green);
-      color: #fff;
-    }
-
-    .btn-fare .currency {
-      font-size: 0.8rem;
-      font-weight: 500;
-      color: var(--text-sub);
-    }
-
-    .btn-fare:active .currency {
-      color: #fff;
-    }
-
-    .btn-custom {
-      grid-column: span 2;
-      background-color: #34495e;
-      border-color: #455a64;
-    }
-
-    /* Notification Flash */
-    .flash-banner {
+    /* Notification Banner */
+    .toast {
       position: fixed;
       top: 16px;
       left: 50%;
       transform: translateX(-50%) translateY(-100px);
-      background-color: var(--accent-green);
-      color: #fff;
-      padding: 10px 24px;
-      border-radius: 30px;
-      font-weight: bold;
-      font-size: 1.1rem;
-      box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4);
+      background: linear-gradient(135deg, var(--accent-emerald), var(--primary-green));
+      color: #0e1416;
+      padding: 12px 28px;
+      border-radius: 50px;
+      font-weight: 800;
+      font-size: 1.2rem;
+      box-shadow: 0 10px 25px rgba(46, 204, 113, 0.4);
       transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      z-index: 1000;
+      z-index: 100;
       pointer-events: none;
     }
 
-    .flash-banner.show {
+    .toast.show {
       transform: translateX(-50%) translateY(0);
     }
 
-    /* Recent Trips / History Sheet */
-    .history-card {
-      background-color: var(--card-bg);
-      border-radius: 16px;
-      padding: 16px;
-      margin-bottom: 12px;
+    /* Total Earnings Display Box */
+    .dashboard-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 20px;
+      text-align: center;
+      margin-top: 10px;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
     }
 
-    .history-header {
+    .dashboard-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .total-amount {
+      font-size: 3.2rem;
+      font-weight: 800;
+      color: var(--primary-green);
+      letter-spacing: -1px;
+      line-height: 1;
+    }
+
+    .total-currency {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: var(--accent-emerald);
+      margin-right: 4px;
+    }
+
+    .stats-subtext {
+      margin-top: 8px;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    /* Driver Buttons Grid */
+    .fare-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin: 18px 0;
+    }
+
+    .btn-fare {
+      background: linear-gradient(145deg, #182823, #121e1a);
+      border: 1px solid rgba(46, 204, 113, 0.2);
+      border-radius: 20px;
+      color: var(--text-bright);
+      padding: 22px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+      transition: transform 0.08s ease, border-color 0.1s ease;
+    }
+
+    .btn-fare:active {
+      transform: scale(0.95);
+      background: var(--dusky-green);
+      border-color: var(--primary-green);
+    }
+
+    .btn-fare .amount-val {
+      font-size: 2.2rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .btn-fare .lbl-currency {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .btn-custom {
+      grid-column: span 2;
+      background: linear-gradient(145deg, #1f3a32, #142822);
+      border-color: var(--accent-emerald);
+      padding: 18px;
+    }
+
+    .btn-custom .amount-val {
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+
+    /* History Drawer */
+    .log-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 16px;
+    }
+
+    .log-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 12px;
-      border-bottom: 1px solid var(--border-color);
-      padding-bottom: 8px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 8px;
     }
 
-    .history-title {
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: var(--text-sub);
+    .log-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
     }
 
-    .btn-reset {
+    .btn-clear {
       background: none;
       border: none;
       color: var(--danger-red);
       font-size: 0.85rem;
       font-weight: 600;
       cursor: pointer;
-      padding: 4px 8px;
     }
 
-    .history-list {
+    .log-list {
       list-style: none;
-      max-height: 140px;
+      max-height: 130px;
       overflow-y: auto;
     }
 
-    .history-item {
+    .log-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 8px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
     }
 
-    .history-item:last-child {
-      border-bottom: none;
-    }
-
-    .history-time {
+    .log-time {
       font-size: 0.85rem;
-      color: var(--text-sub);
+      color: var(--text-muted);
     }
 
-    .history-amount {
+    .log-val {
       font-weight: 700;
-      color: var(--text-main);
+      font-size: 1.05rem;
+      color: var(--text-bright);
     }
 
-    .btn-delete-item {
+    .btn-del {
       background: none;
       border: none;
       color: var(--danger-red);
       font-size: 1.2rem;
-      padding: 0 8px;
+      margin-left: 12px;
       cursor: pointer;
     }
 
     /* Custom Input Modal */
-    .modal-overlay {
+    .modal-backdrop {
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0,0,0,0.8);
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(4px);
       display: flex;
       align-items: center;
       justify-content: center;
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.2s ease;
-      z-index: 2000;
+      z-index: 200;
     }
 
-    .modal-overlay.active {
+    .modal-backdrop.active {
       opacity: 1;
       pointer-events: auto;
     }
 
-    .modal-content {
-      background: var(--card-bg);
-      padding: 24px;
-      border-radius: 20px;
-      width: 90%;
+    .modal-box {
+      background: #182421;
+      border: 1px solid var(--accent-emerald);
+      border-radius: 24px;
+      width: 88%;
       max-width: 320px;
+      padding: 24px;
       text-align: center;
     }
 
-    .modal-title {
-      margin-bottom: 16px;
-      font-size: 1.2rem;
-    }
-
-    .custom-input {
+    .modal-input {
       width: 100%;
-      background: var(--bg-color);
-      border: 2px solid var(--border-color);
-      border-radius: 12px;
+      background: #0e1416;
+      border: 2px solid var(--dusky-green);
+      border-radius: 14px;
       color: #fff;
-      font-size: 2rem;
+      font-size: 2.2rem;
+      font-weight: 700;
       padding: 12px;
       text-align: center;
-      margin-bottom: 16px;
+      margin: 16px 0;
       outline: none;
     }
 
-    .custom-input:focus {
-      border-color: var(--accent-green);
+    .modal-input:focus {
+      border-color: var(--primary-green);
     }
 
-    .modal-actions {
+    .modal-btns {
       display: flex;
-      gap: 12px;
+      gap: 10px;
     }
 
-    .btn-modal {
+    .btn-m {
       flex: 1;
       padding: 14px;
-      border-radius: 12px;
+      border-radius: 14px;
       border: none;
+      font-weight: 700;
       font-size: 1rem;
-      font-weight: bold;
       cursor: pointer;
     }
 
-    .btn-cancel {
-      background: var(--button-bg);
-      color: var(--text-main);
+    .btn-m-cancel {
+      background: #2a3834;
+      color: var(--text-muted);
     }
 
-    .btn-confirm {
-      background: var(--accent-green);
-      color: #fff;
+    .btn-m-add {
+      background: var(--primary-green);
+      color: #0e1416;
     }
   </style>
 </head>
 <body>
 
-  <!-- Flash Banner Notification -->
-  <div id="flashBanner" class="flash-banner">+MVR 0 Added</div>
+  <!-- Instant Toast Banner -->
+  <div id="toast" class="toast">+MVR 0</div>
 
-  <!-- Header Section -->
-  <header>
-    <div class="subtitle">Today's Total Earnings</div>
-    <div class="total-display"><span style="font-size: 1.8rem; font-weight: 500;">MVR</span> <span id="todayTotal">0</span></div>
-    <div class="trip-count"><span id="tripCount">0</span> trips recorded today</div>
-  </header>
+  <!-- Top Total Area -->
+  <div class="dashboard-card">
+    <div class="dashboard-title">Today's Total Earnings</div>
+    <div class="total-amount"><span class="total-currency">MVR</span><span id="totalDisplay">0</span></div>
+    <div class="stats-subtext"><span id="countDisplay">0</span> trips logged today</div>
+  </div>
 
-  <!-- Quick Fare Action Buttons -->
-  <main class="fare-grid">
-    <button class="btn-fare" onclick="recordFare(30)"><span class="currency">MVR</span>30</button>
-    <button class="btn-fare" onclick="recordFare(70)"><span class="currency">MVR</span>70</button>
-    <button class="btn-fare" onclick="recordFare(80)"><span class="currency">MVR</span>80</button>
-    <button class="btn-fare" onclick="recordFare(85)"><span class="currency">MVR</span>85</button>
-    <button class="btn-fare" onclick="recordFare(100)"><span class="currency">MVR</span>100</button>
-    <button class="btn-fare btn-custom" onclick="openCustomModal()">Custom Amount</button>
-  </main>
+  <!-- Preset Quick Tap Grid -->
+  <div class="fare-grid">
+    <button class="btn-fare" onclick="addFare(30)">
+      <span class="lbl-currency">MVR</span>
+      <span class="amount-val">30</span>
+    </button>
+    <button class="btn-fare" onclick="addFare(70)">
+      <span class="lbl-currency">MVR</span>
+      <span class="amount-val">70</span>
+    </button>
+    <button class="btn-fare" onclick="addFare(80)">
+      <span class="lbl-currency">MVR</span>
+      <span class="amount-val">80</span>
+    </button>
+    <button class="btn-fare" onclick="addFare(85)">
+      <span class="lbl-currency">MVR</span>
+      <span class="amount-val">85</span>
+    </button>
+    <button class="btn-fare" onclick="addFare(100)">
+      <span class="lbl-currency">MVR</span>
+      <span class="amount-val">100</span>
+    </button>
+    <button class="btn-fare btn-custom" onclick="openModal()">
+      <span class="amount-val">+ Custom Fare</span>
+    </button>
+  </div>
 
-  <!-- Recent History Card -->
-  <section class="history-card">
-    <div class="history-header">
-      <span class="history-title">Today's Log</span>
-      <button class="btn-reset" onclick="confirmReset()">Reset Day</button>
+  <!-- Today's Log -->
+  <div class="log-card">
+    <div class="log-header">
+      <span class="log-title">Today's History</span>
+      <button class="btn-clear" onclick="clearDay()">Clear Day</button>
     </div>
-    <ul class="history-list" id="historyList">
-      <!-- Items dynamically injected here -->
-    </ul>
-  </section>
+    <ul class="log-list" id="logList"></ul>
+  </div>
 
-  <!-- Custom Fare Modal -->
-  <div class="modal-overlay" id="customModal">
-    <div class="modal-content">
-      <div class="modal-title">Enter Custom Fare</div>
-      <input type="number" id="customAmountInput" class="custom-input" placeholder="0" inputmode="decimal">
-      <div class="modal-actions">
-        <button class="btn-modal btn-cancel" onclick="closeCustomModal()">Cancel</button>
-        <button class="btn-modal btn-confirm" onclick="submitCustomFare()">Add</button>
+  <!-- Custom Fare Dialog -->
+  <div class="modal-backdrop" id="modal">
+    <div class="modal-box">
+      <h3>Custom Fare</h3>
+      <input type="number" id="customInput" class="modal-input" placeholder="0" inputmode="decimal">
+      <div class="modal-btns">
+        <button class="btn-m btn-m-cancel" onclick="closeModal()">Cancel</button>
+        <button class="btn-m btn-m-add" onclick="submitCustom()">Add Fare</button>
       </div>
     </div>
   </div>
 
   <script>
-    // State management
-    let trips = JSON.parse(localStorage.getItem('taxi_trips') || '[]');
+    let logs = JSON.parse(localStorage.getItem('mvr_taxi_logs') || '[]');
 
-    // Audio Feedback setup using Web Audio API (no external file downloads needed)
+    // Audio Feedback Context
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     
-    function playBeep() {
-      if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-      }
+    function playAudioFeedback() {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
       osc.type = 'sine';
-      osc.frequency.setValueAtTime(880, audioCtx.currentTime); // High pitch A5 note
-      gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+      osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.12);
       osc.connect(gain);
       gain.connect(audioCtx.destination);
       osc.start();
-      osc.stop(audioCtx.currentTime + 0.15);
+      osc.stop(audioCtx.currentTime + 0.12);
     }
 
     function triggerHaptic() {
-      if (navigator.vibrate) {
-        navigator.vibrate(50);
-      }
+      if (navigator.vibrate) navigator.vibrate(40);
     }
 
-    // Core logic
-    function recordFare(amount) {
+    function addFare(amount) {
       if (!amount || amount <= 0) return;
 
-      const newTrip = {
+      const entry = {
         id: Date.now(),
         amount: Number(amount),
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         date: new Date().toISOString().split('T')[0]
       };
 
-      trips.unshift(newTrip);
-      saveAndUpdateUI();
+      logs.unshift(entry);
+      saveAndRender();
 
-      // Driver Feedback
-      playBeep();
+      playAudioFeedback();
       triggerHaptic();
-      showFlash(`+MVR ${amount}`);
+      showToast(`+MVR ${amount}`);
     }
 
-    function deleteTrip(id) {
-      trips = trips.filter(t => t.id !== id);
-      saveAndUpdateUI();
+    function deleteEntry(id) {
+      logs = logs.filter(item => item.id !== id);
+      saveAndRender();
       triggerHaptic();
     }
 
-    function confirmReset() {
-      if (confirm("Are you sure you want to clear today's earnings?")) {
-        trips = [];
-        saveAndUpdateUI();
+    function clearDay() {
+      if (confirm("Reset today's logged trips?")) {
+        logs = [];
+        saveAndRender();
         triggerHaptic();
       }
     }
 
-    function saveAndUpdateUI() {
-      localStorage.setItem('taxi_trips', JSON.stringify(trips));
+    function saveAndRender() {
+      localStorage.setItem('mvr_taxi_logs', JSON.stringify(logs));
       render();
     }
 
-    function showFlash(message) {
-      const banner = document.getElementById('flashBanner');
-      banner.textContent = message;
-      banner.classList.add('show');
-      setTimeout(() => {
-        banner.classList.remove('show');
-      }, 1200);
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 1200);
     }
 
     function render() {
-      const todayStr = new Date().toISOString().split('T')[0];
-      const todayTrips = trips.filter(t => t.date === todayStr);
+      const today = new Date().toISOString().split('T')[0];
+      const todayLogs = logs.filter(item => item.date === today);
 
-      const total = todayTrips.reduce((sum, t) => sum + t.amount, 0);
-      document.getElementById('todayTotal').textContent = total.toLocaleString();
-      document.getElementById('tripCount').textContent = todayTrips.length;
+      const total = todayLogs.reduce((acc, item) => acc + item.amount, 0);
+      document.getElementById('totalDisplay').textContent = total.toLocaleString();
+      document.getElementById('countDisplay').textContent = todayLogs.length;
 
-      const historyList = document.getElementById('historyList');
-      historyList.innerHTML = '';
+      const listEl = document.getElementById('logList');
+      listEl.innerHTML = '';
 
-      if (todayTrips.length === 0) {
-        historyList.innerHTML = `<li class="history-item" style="color: var(--text-sub); justify-content: center;">No trips logged today yet.</li>`;
+      if (todayLogs.length === 0) {
+        listEl.innerHTML = `<li class="log-item" style="justify-content:center; color: var(--text-muted); font-size: 0.85rem;">No trips recorded today yet.</li>`;
         return;
       }
 
-      todayTrips.forEach(trip => {
+      todayLogs.forEach(item => {
         const li = document.createElement('li');
-        li.className = 'history-item';
+        li.className = 'log-item';
         li.innerHTML = `
-          <span class="history-time">${trip.timestamp}</span>
+          <span class="log-time">${item.time}</span>
           <div>
-            <span class="history-amount">MVR ${trip.amount}</span>
-            <button class="btn-delete-item" onclick="deleteTrip(${trip.id})">&times;</button>
+            <span class="log-val">MVR ${item.amount}</span>
+            <button class="btn-del" onclick="deleteEntry(${item.id})">&times;</button>
           </div>
         `;
-        historyList.appendChild(li);
+        listEl.appendChild(li);
       });
     }
 
-    // Modal controls for Custom Fare
-    function openCustomModal() {
-      const modal = document.getElementById('customModal');
-      const input = document.getElementById('customAmountInput');
+    function openModal() {
+      const modal = document.getElementById('modal');
+      const input = document.getElementById('customInput');
       input.value = '';
       modal.classList.add('active');
       setTimeout(() => input.focus(), 100);
     }
 
-    function closeCustomModal() {
-      document.getElementById('customModal').classList.remove('active');
+    function closeModal() {
+      document.getElementById('modal').classList.remove('active');
     }
 
-    function submitCustomFare() {
-      const input = document.getElementById('customAmountInput');
-      const val = parseFloat(input.value);
+    function submitCustom() {
+      const val = parseFloat(document.getElementById('customInput').value);
       if (val && val > 0) {
-        recordFare(val);
-        closeCustomModal();
+        addFare(val);
+        closeModal();
       }
     }
 
-    // Initial render call
     render();
   </script>
 </body>
